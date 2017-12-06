@@ -49,7 +49,7 @@ exports.connectionFromArray = ({ array, args, count }) => {
   const hasPreviousPage = (args.offset > 0);
 
   return {
-    edges: (hasNextPage) ? _.initial(edges) : edges,
+    edges: (hasNextPage) ? initial(edges) : edges,
     pageInfo: {
       hasNextPage,
       hasPreviousPage,
