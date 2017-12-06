@@ -6,7 +6,6 @@
 ```
 $ yarn add graphql-connection
 ```
-
 ## Usage
 
 Example:

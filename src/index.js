@@ -44,7 +44,7 @@ exports.connectionDefinitions = ({ name, type }) => (
 );
 
 exports.connectionFromArray = ({ array, args, count }) => {
-  const edges = (!_.isEmpty(array) && _.isArray(array)) ? array : [];
+  const edges = (!isEmpty(array) && isArray(array)) ? array : [];
   const hasNextPage = (edges.length === args.limit + 1);
   const hasPreviousPage = (args.offset > 0);
 
