@@ -53,47 +53,47 @@ export const groupType = new GraphQLObjectType({
 
 Returns configuration for the connection field.
 
-`options`
-Type: `Object`
+`options`  
+Type: `Object`  
 Property: `name`, `type`
 
-`name`
+`name`  
 Type: `String`
 
-`type`
+`type`  
 Type: `GraphQLObjectType`
 
 ### connectionArgs
 
 Object with property `limit` and `offset` that are required for the connection's `args` field.
 
-`connectionArgs`
-Type: `Object`
+`connectionArgs`  
+Type: `Object`  
 Property: `limit`, `offset`
 
-`limit`
+`limit`  
 Type: `Number`
 
-`offset`
-Type: `Number`
+`offset`  
+Type: `Number`  
 Default: `0`
 
 ### connectionFromArray(_options_)
 
-`options`
-Type: `Object`
+`options`  
+Type: `Object`  
 Property: `array`, `args`, `count`
 
-`array`
+`array`  
 Type: `Array`
 
-`args`
-Type: `Object`
-Property: `limit`, `offset`
+`args`  
+Type: `Object`  
+Property: `limit`, `offset`  
 `args` is needed to set `true` or `false` for `hasNextPage` and `hasPreviousPage`.
 
-`count`
-Type: `Number`
+`count`  
+Type: `Number`  
 The maximum amount of nodes that can be fetched.
 
 ## Related
