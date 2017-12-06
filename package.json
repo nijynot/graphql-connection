@@ -1,0 +1,33 @@
+{
+  "name": "graphql-connection",
+  "version": "1.0.1",
+  "description": "GraphQL Connection library with LIMIT and OFFSET as main arguments for pagination. Inspired by Relay.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nijynot/graphql-connection.git"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --presets babel-preset-es2015 --out-dir lib"
+  },
+  "author": "nijynot",
+  "keywords": [
+    "graphql"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  },
+  "dependencies": {
+    "graphql": "^0.11.7",
+    "lodash": "^4.17.4"
+  }
+}
