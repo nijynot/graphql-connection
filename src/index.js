@@ -12,6 +12,7 @@ import {
 
 import initial from 'lodash/initial';
 import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
 
 const pageInfoType = new GraphQLObjectType({
   name: 'PageInfo',
