@@ -1,6 +1,6 @@
 {
   "name": "graphql-connection",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "GraphQL Connection library with LIMIT and OFFSET as main arguments for pagination. Inspired by Relay.",
   "repository": {
     "type": "git",
