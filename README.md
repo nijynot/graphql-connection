@@ -62,14 +62,14 @@ Returns a connection from given array and forward pagination arguments.
 Type: `Array`  
 
 `args`  
-Type: `Object`
-Property: `first`, `after`
+Type: `Object`  
+Property: `first`, `after`  
 Note: Accepts only forward pagination arguments.
 
-`first`
+`first`  
 Type: `Number`
 
-`after`
+`after`  
 Type: `String`
 
 ### transformToForward
