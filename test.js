@@ -1,73 +1,50 @@
 const test = require('ava');
 const {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-} = require('graphql');
-const {
-  connectionDefinitions,
-  connectionArgs,
   connectionFromArray,
-  pageInfoType,
+  transformToForward,
 } = require('./lib/index.js');
 
-// test('define connection', t => {
-//   t.deepEqual(
-//     new GraphQLObjectType({
-//       name: 'UserConnection',
-//       fields: () => ({
-//         edges: {
-//           type: new GraphQLList(GraphQLString),
-//         },
-//         pageInfo: {
-//           type: new GraphQLNonNull(pageInfoType),
-//         },
-//         count: {
-//           type: GraphQLInt,
-//         },
-//       }),
-//     }),
-//     connectionDefinitions({ name: 'UserConnection', type: GraphQLString })
-//   );
-// });
-
-test('check connection arguments', t => {
-  t.deepEqual({
-    limit: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    offset: {
-      type: GraphQLInt,
-      defaultValue: 0,
-    },
-  }, connectionArgs);
+test('turn backward into forward', t => {
+  const args = {
+    last: 5,
+    before: 'YXJyYXljb25uZWN0aW9uOjg=',
+  };
+  const forward = transformToForward(args);
+  t.deepEqual(forward, { first: 5, after: 'YXJyYXljb25uZWN0aW9uOjI=' });
 });
 
-test('turn array into connection', t => {
-  const array = [
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-  ];
+test('turn backward into forward with no after', t => {
   const args = {
-    limit: 3,
-    offset: 1,
+    last: 5,
+    before: 'YXJyYXljb25uZWN0aW9uOjM=',
   };
-  const count = 10;
+  const forward = transformToForward(args);
+  t.deepEqual(forward, { first: 3, after: 'YXJyYXljb25uZWN0aW9uOi0x' });
+});
+
+test('array into connection', t => {
+  const forward = { first: 3, after: 'YXJyYXljb25uZWN0aW9uOjE=' };
+  const data = [
+    // { id: 'a' }
+    // { id: 'b' }
+    { id: 'c' },
+    { id: 'd' },
+    { id: 'e' },
+    { id: 'f' },
+  ];
+  const connection = connectionFromArray(data, forward);
   const expected = {
     edges: [
-      { id: 2 },
-      { id: 3 },
-      { id: 4 },
+      { node: { id: 'c' }, cursor: 'YXJyYXljb25uZWN0aW9uOjI=' },
+      { node: { id: 'd' }, cursor: 'YXJyYXljb25uZWN0aW9uOjM=' },
+      { node: { id: 'e' }, cursor: 'YXJyYXljb25uZWN0aW9uOjQ=' },
     ],
     pageInfo: {
+      startCursor: 'YXJyYXljb25uZWN0aW9uOjI=',
+      endCursor: 'YXJyYXljb25uZWN0aW9uOjQ=',
       hasNextPage: true,
       hasPreviousPage: true,
     },
-    count: 10,
-  }
-  t.deepEqual(connectionFromArray({ array, args, count }), expected, 'cool');
+  };
+  t.deepEqual(connection, expected);
 });

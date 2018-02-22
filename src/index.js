@@ -1,70 +1,62 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLSchema,
-  GraphQLString,
-} from 'graphql';
+import { getOffsetWithDefault, offsetToCursor, cursorToOffset } from 'graphql-relay';
 
-import initial from 'lodash/initial';
-import isArray from 'lodash/isArray';
-import isEmpty from 'lodash/isEmpty';
+export function connectionFromArray(arraySlice, args) {
+  const { first, after } = args;
+  const afterOffset = getOffsetWithDefault(after, -1) + 1;
 
-const pageInfoType = new GraphQLObjectType({
-  name: 'PageInfo',
-  fields: () => ({
-    hasNextPage: {
-      type: GraphQLBoolean,
-    },
-    hasPreviousPage: {
-      type: GraphQLBoolean,
-    },
-  }),
-});
-exports.pageInfoType = pageInfoType;
+  if (typeof first === 'number') {
+    if (first < 0) {
+      throw new Error('Argument "first" must be a non-negative integer');
+    }
+  }
 
-exports.connectionDefinitions = ({ name, type }) => (
-  new GraphQLObjectType({
-    name,
-    fields: () => ({
-      edges: {
-        type: new GraphQLList(type),
-      },
-      pageInfo: {
-        type: new GraphQLNonNull(pageInfoType),
-      },
-      count: {
-        type: GraphQLInt,
-      },
-    }),
-  })
-);
+  // If supplied slice is too large, trim it down before mapping over it.
+  const slice = arraySlice.slice(
+    0,
+    first
+  );
 
-exports.connectionFromArray = ({ array, args, count }) => {
-  const edges = (!isEmpty(array) && isArray(array)) ? array : [];
-  const hasNextPage = (edges.length === args.limit + 1);
-  const hasPreviousPage = (args.offset > 0);
+  const edges = slice.map((value, index) => ({
+    cursor: offsetToCursor(afterOffset + index),
+    node: value,
+  }));
+
+  const endOffset = Math.min(first - 1, arraySlice.length - 1);
+
+  const firstEdge = edges[0];
+  const lastEdge = edges[endOffset];
 
   return {
-    edges: (hasNextPage) ? initial(edges) : edges,
+    edges,
     pageInfo: {
-      hasNextPage,
-      hasPreviousPage,
+      startCursor: firstEdge ? firstEdge.cursor : null,
+      endCursor: lastEdge ? lastEdge.cursor : null,
+      hasPreviousPage: afterOffset > 0,
+      hasNextPage: first < arraySlice.length,
     },
-    count,
   };
-};
+}
 
-exports.connectionArgs = {
-  limit: {
-    type: new GraphQLNonNull(GraphQLInt),
-  },
-  offset: {
-    type: GraphQLInt,
-    defaultValue: 0,
-  },
-};
+export function transformToForward(args) {
+  const { first, after, last, before } = args;
+
+  if (typeof first === 'number' && first >= 0) {
+    if (first < 0) {
+      throw new Error('Argument "first" must be a non-negative integer');
+    }
+    return { first, after };
+  }
+
+  if (typeof last === 'number' && typeof before === 'string') {
+    if (last < 0) {
+      throw new Error('Argument "last" must be a non-negative integer');
+    }
+    const afterOffset = Math.max(cursorToOffset(before) - last - 1, -1);
+    return {
+      first: Math.min(last, getOffsetWithDefault(before, 0)),
+      after: offsetToCursor(afterOffset),
+    };
+  }
+
+  return args;
+}
